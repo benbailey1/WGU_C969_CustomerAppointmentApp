@@ -1,0 +1,83 @@
+# .NET Framework 4.8 WinForms Application GitIgnore
+
+# Visual Studio files
+.vs
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build folders
+bin/
+obj/
+
+# Visual Studio Code workspace settings
+.vscode/
+
+# Windows image file caches
+Thumbs.db
+Thumbs.db:encryptable
+*.stackdump
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows shortcuts
+*.lnk
+
+# Web/ASP.NET-specific
+_app_data/
+
+# NuGet Packages
+tools/
+*.nupkg
+*.nuget.props
+*.nuget.targets
+packages/
+.nuget/
+
+# Rider files
+.idea/
+*.sln.iml
+
+# Resharper files
+*.DotSettings.user
+
+# Entity Framework
+*.edmx.diagram
+*.edmx.sql
+
+# Publish folder
+PublishOutput/
+
+# IIS configuration
+.config
+
+# Logs
+*.log
+
+# User-specific files
+*.rsuser
+*.resharper.user
+*.sln.docstates
+
+# Azure Resource Manager files
+*.ps1
+*.psd1
+*.psm1
+
+# Rider settings
+.idea/
+
+# Backup and temporary files
+*.bak
+*.swp
+*.swpp
+
+# Other Visual Studio files
+*.vspscc
+*.vssscc
