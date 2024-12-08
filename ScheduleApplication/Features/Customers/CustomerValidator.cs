@@ -43,7 +43,7 @@ namespace ScheduleApplication.Features.Customers
                 {
                     if (!Regex.IsMatch(customer.Address.Phone, @"^[0-9\-]+$"))
                     {
-                        errors.Add("Phone number must only contain digits and dashes."))
+                        errors.Add("Phone number must only contain digits and dashes.");
                     }
                 }
             }
