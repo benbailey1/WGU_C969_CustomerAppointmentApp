@@ -124,6 +124,7 @@
     <Compile Include="Features\Customers\CustomerRepository.cs" />
     <Compile Include="Features\Customers\CustomerResponse.cs" />
     <Compile Include="Features\Customers\CustomerService.cs" />
+    <Compile Include="Features\Customers\CustomerValidator.cs" />
     <Compile Include="Features\Login\AuthService.cs" />
     <Compile Include="Features\Login\LoginForm.cs">
       <SubType>Form</SubType>
