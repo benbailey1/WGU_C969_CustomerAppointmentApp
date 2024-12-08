@@ -98,7 +98,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\Appointments\Appointment.cs" />
+    <Compile Include="Features\Appointments\AppointmentModel.cs" />
     <Compile Include="Features\Appointments\AppointmentManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +107,8 @@
     </Compile>
     <Compile Include="Features\Appointments\AppointmentRepository.cs" />
     <Compile Include="Features\Appointments\AppointmentService.cs" />
+    <Compile Include="Features\Appointments\AppointmentValidationResult.cs" />
+    <Compile Include="Features\Appointments\AppointmentValidator.cs" />
     <Compile Include="Features\Calendar\CalendarForm.cs">
       <SubType>Form</SubType>
     </Compile>
