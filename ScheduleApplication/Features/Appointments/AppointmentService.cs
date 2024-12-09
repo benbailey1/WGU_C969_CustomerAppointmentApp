@@ -1,8 +1,5 @@
 ﻿using ScheduleApplication.Features.Appointments.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ScheduleApplication.Features.Appointments
@@ -17,27 +14,79 @@ namespace ScheduleApplication.Features.Appointments
     public class AppointmentService : IAppointmentService
     {
         private readonly IAppointmentRepository _apptRepo;
+        private readonly IAppointmentValidator _apptValidate;
 
-        public AppointmentService() { }
-
-        public Task<AppointmentResult<int>> CreateAppointmentAsync(AppointmentModel appt)
+        public AppointmentService(IAppointmentRepository apptRepo, IAppointmentValidator apptValidate) 
         {
-            throw new NotImplementedException();
+            _apptRepo = apptRepo;
+            _apptValidate = apptValidate;
         }
 
-        public Task<AppointmentResult<List<AppointmentModel>>> GetAllAppointmentsAsync()
+        public async Task<AppointmentResult<int>> CreateAppointmentAsync(AppointmentModel appt)
         {
-            throw new NotImplementedException();
+            // Get existing appointments to check against new appointment
+            var existingAppts = await _apptRepo.GetAllAppointmentsAsync();
+            if (!existingAppts.IsSuccess)
+            {
+                return AppointmentResult<int>.Failure(existingAppts.Errors);
+            }
+
+            // validate new appointment against existing 
+            var validateRes = _apptValidate.Validate(appt, existingAppts.Value);
+            if (!validateRes.IsSuccess)
+            {
+                return AppointmentResult<int>.ValidationError(validateRes.Errors);
+            }
+
+            var result = await _apptRepo.AddAppointmentAsync(appt);
+            if (!result.IsSuccess)
+            {
+                return result;
+            }
+
+            return AppointmentResult<int>.Success(result.Value);
+
         }
 
-        public Task<AppointmentResult<bool>> UpdateAppointmentAsync(AppointmentModel appt)
+        public async Task<AppointmentResult<List<AppointmentModel>>> GetAllAppointmentsAsync()
         {
-            throw new NotImplementedException();
+            return await _apptRepo.GetAllAppointmentsAsync();
+        }
+
+        public async Task<AppointmentResult<bool>> UpdateAppointmentAsync(AppointmentModel appt)
+        {
+            // Get existing appointments to check against new appointment
+            var existingAppts = await _apptRepo.GetAllAppointmentsAsync();
+            if (!existingAppts.IsSuccess)
+            {
+                return AppointmentResult<bool>.Failure(existingAppts.Errors);
+            }
+
+            // validate new appointment against existing 
+            var validateRes = _apptValidate.Validate(appt, existingAppts.Value);
+            if (!validateRes.IsSuccess)
+            {
+                return AppointmentResult<bool>.ValidationError(validateRes.Errors);
+            }
+
+            var result = await _apptRepo.UpdateAppointmentAsync(appt);
+            if (!result.IsSuccess)
+            {
+                return result;
+            }
+
+            return AppointmentResult<bool>.Success(true);
         }
         
-        public Task<AppointmentResult<bool>> DeleteAppointmentAsync(int id)
+        public async Task<AppointmentResult<bool>> DeleteAppointmentAsync(int id)
         {
-            throw new NotImplementedException();
+            var result = await _apptRepo.DeleteAppointmentAsync(id);
+            if (!result.IsSuccess)
+            {
+                return result;
+            }
+
+            return AppointmentResult<bool>.Success(true);
         }
     }
 }
