@@ -220,7 +220,7 @@ namespace ScheduleApplication.Features.Customers
                 {
                     await conn.OpenAsync();
 
-                    string query = "DELETE FROM customer WHERE customerId = @customerId;";
+                    string query = @"DELETE FROM customer WHERE customerId = @customerId;";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {

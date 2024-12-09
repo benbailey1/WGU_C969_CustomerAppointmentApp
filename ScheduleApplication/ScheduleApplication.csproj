@@ -107,7 +107,7 @@
     </Compile>
     <Compile Include="Features\Appointments\AppointmentRepository.cs" />
     <Compile Include="Features\Appointments\AppointmentService.cs" />
-    <Compile Include="Features\Appointments\AppointmentValidationResult.cs" />
+    <Compile Include="Features\Appointments\AppointmentResult.cs" />
     <Compile Include="Features\Appointments\AppointmentValidator.cs" />
     <Compile Include="Features\Calendar\CalendarForm.cs">
       <SubType>Form</SubType>
