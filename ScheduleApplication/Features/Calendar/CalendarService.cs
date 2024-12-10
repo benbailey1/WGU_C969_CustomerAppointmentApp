@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ScheduleApplication.Features.Calendar
 {
-    internal class ClaendarService
+    internal class CalendarService
     {
     }
 }
