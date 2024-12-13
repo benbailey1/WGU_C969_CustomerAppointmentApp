@@ -109,6 +109,7 @@
     <Compile Include="Features\Appointments\AppointmentService.cs" />
     <Compile Include="Features\Appointments\AppointmentResult.cs" />
     <Compile Include="Features\Appointments\AppointmentValidator.cs" />
+    <Compile Include="Features\Appointments\Models\LocationAppointmentSummary.cs" />
     <Compile Include="Features\Appointments\MonthlyAppointmentTypes.cs" />
     <Compile Include="Features\Calendar\CalendarForm.cs">
       <SubType>Form</SubType>

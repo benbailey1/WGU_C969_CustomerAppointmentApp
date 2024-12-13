@@ -347,7 +347,6 @@ namespace ScheduleApplication.Features.Main
                 };
                 contentPanel.Controls.Add(reportPanel);
 
-
                 Label titleLabel = new Label
                 {
                     Text = "Appointments By User Report",
@@ -361,7 +360,7 @@ namespace ScheduleApplication.Features.Main
                 {
                     Location = new Point(10, titleLabel.Bottom + 20),
                     Width = contentPanel.Width - 40,
-                    Height = contentPanel.Height - 40,
+                    Height = contentPanel.Height - titleLabel.Height - 60,
                     AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
                     AllowUserToAddRows = false,
                     AllowUserToDeleteRows = false,
@@ -377,33 +376,207 @@ namespace ScheduleApplication.Features.Main
 
                 DataTable dt = new DataTable();
                 dt.Columns.Add("UserId", typeof(int));
+                dt.Columns.Add("Customer", typeof(string));
                 dt.Columns.Add("Appointment Type", typeof(string));
-                dt.Columns.Add("Date", typeof(int));
+                dt.Columns.Add("Start Date", typeof(DateTime));
+                dt.Columns.Add("End Date", typeof(DateTime));
+                dt.Columns.Add("Location", typeof(string));
 
-                //foreach (var month in data.OrderBy(m => DateTime.ParseExact(m.Month, "MMMM", null)))
-                //{
-                //    foreach (var typeCount in month.TypeCounts.OrderByDescending(tc => tc.Count))
-                //    {
-                //        dt.Rows.Add(month.Month, typeCount.Type, typeCount.Count);
-                //    }
-                //}
+                foreach (var userSchedule in result.Value)
+                {
+                    foreach (var appointment in userSchedule.Value.OrderBy(a => a.Start))
+                    {
+                        dt.Rows.Add(
+                            userSchedule.Key,
+                            appointment.CustomerName,
+                            appointment.Type,
+                            appointment.Start,
+                            appointment.End,
+                            appointment.Location
+                        );
+                    }
+                }
 
-                //return dt;
+                gridView.DataSource = dt;
+
+                gridView.Columns["Start Date"].DefaultCellStyle.Format = "g";
+                gridView.Columns["End Date"].DefaultCellStyle.Format = "g";
+
+                Label summaryLabel = new Label
+                {
+                    Text = $"Total Appointments: {dt.Rows.Count}",
+                    Font = new Font("Segoe UI", 10),
+                    AutoSize = true,
+                    Location = new Point(10, gridView.Bottom + 10)
+                };
+                reportPanel.Controls.Add(summaryLabel);
+
+                gridView.AutoResizeColumns();
+
+                reportPanel.Refresh();
 
             }
             catch (Exception ex)
             {
-
-                throw;
+                MessageBox.Show($"Error displaying report: {ex.Message}", 
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
             }
             
         }
 
-        private void ShowLocationReport()
+        private async void ShowLocationReport()
         {
-            contentPanel.Controls.Clear();
-            // TODO: Add your report display logic here
-            MessageBox.Show("Showing Location Report");
+            try
+            {
+                contentPanel.Controls.Clear();
+
+                Label loadingLabel = new Label
+                {
+                    Text = "Loading report...",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12),
+                    Location = new Point(10, 10)
+                };
+                contentPanel.Controls.Add(loadingLabel);
+
+                var result = await _apptService.GetAppointmentsByLocationAsync();
+
+                if (!result.IsSuccess)
+                {
+                    MessageBox.Show($"Error loading report: {result.Errors}", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                contentPanel.Controls.Remove(loadingLabel);
+
+                // Create report container
+                Panel reportPanel = new Panel
+                {
+                    Dock = DockStyle.Fill,
+                    AutoScroll = true
+                };
+                contentPanel.Controls.Add(reportPanel);
+
+                // Create title label
+                Label titleLabel = new Label
+                {
+                    Text = "Appointments By Location Report",
+                    Font = new Font("Segoe UI", 14, FontStyle.Bold),
+                    AutoSize = true,
+                    Location = new Point(10, 10)
+                };
+                reportPanel.Controls.Add(titleLabel);
+
+                // Create location summary grid
+                DataGridView summaryGrid = new DataGridView
+                {
+                    Location = new Point(10, titleLabel.Bottom + 20),
+                    Width = contentPanel.Width - 40,
+                    Height = 200,
+                    AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                    AllowUserToAddRows = false,
+                    AllowUserToDeleteRows = false,
+                    ReadOnly = true,
+                    BackgroundColor = Color.White,
+                    BorderStyle = BorderStyle.Fixed3D,
+                    ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
+                    SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                    MultiSelect = false,
+                    AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.AliceBlue }
+                };
+
+                // Create and populate summary DataTable
+                DataTable summaryDt = new DataTable();
+                summaryDt.Columns.Add("Location", typeof(string));
+                summaryDt.Columns.Add("Total Appointments", typeof(int));
+                summaryDt.Columns.Add("Unique Customers", typeof(int));
+                summaryDt.Columns.Add("Most Common Type", typeof(string));
+                summaryDt.Columns.Add("Upcoming Appointments", typeof(int));
+
+                foreach (var location in result.Value)
+                {
+                    summaryDt.Rows.Add(
+                        location.Location,
+                        location.TotalAppointments,
+                        location.UniqueCustomers,
+                        location.AppointmentTypes.FirstOrDefault()?.Type ?? "N/A",
+                        location.UpcomingAppointments.Count
+                    );
+                }
+
+                summaryGrid.DataSource = summaryDt;
+                reportPanel.Controls.Add(summaryGrid);
+
+                // Add label for upcoming appointments section
+                Label upcomingLabel = new Label
+                {
+                    Text = "Upcoming Appointments by Location",
+                    Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                    AutoSize = true,
+                    Location = new Point(10, summaryGrid.Bottom + 20)
+                };
+                reportPanel.Controls.Add(upcomingLabel);
+
+                // Create upcoming appointments grid
+                DataGridView upcomingGrid = new DataGridView
+                {
+                    Location = new Point(10, upcomingLabel.Bottom + 10),
+                    Width = contentPanel.Width - 40,
+                    Height = contentPanel.Height - summaryGrid.Height - 150,
+                    AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill,
+                    AllowUserToAddRows = false,
+                    AllowUserToDeleteRows = false,
+                    ReadOnly = true,
+                    BackgroundColor = Color.White,
+                    BorderStyle = BorderStyle.Fixed3D,
+                    ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
+                    SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                    MultiSelect = false,
+                    AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.AliceBlue }
+                };
+
+                // Create and populate upcoming appointments DataTable
+                DataTable upcomingDt = new DataTable();
+                upcomingDt.Columns.Add("Location", typeof(string));
+                upcomingDt.Columns.Add("Customer", typeof(string));
+                upcomingDt.Columns.Add("Type", typeof(string));
+                upcomingDt.Columns.Add("Start Time", typeof(DateTime));
+                upcomingDt.Columns.Add("End Time", typeof(DateTime));
+
+                foreach (var location in result.Value)
+                {
+                    foreach (var appointment in location.UpcomingAppointments)
+                    {
+                        upcomingDt.Rows.Add(
+                            location.Location,
+                            appointment.CustomerName,
+                            appointment.Type,
+                            appointment.Start,
+                            appointment.End
+                        );
+                    }
+                }
+
+                upcomingGrid.DataSource = upcomingDt;
+                reportPanel.Controls.Add(upcomingGrid);
+
+                // Format datetime columns
+                upcomingGrid.Columns["Start Time"].DefaultCellStyle.Format = "g";
+                upcomingGrid.Columns["End Time"].DefaultCellStyle.Format = "g";
+
+                // Auto-resize columns for best fit
+                summaryGrid.AutoResizeColumns();
+                upcomingGrid.AutoResizeColumns();
+
+                // Refresh the panel
+                reportPanel.Refresh();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error displaying report: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ShowCustomerManagement()

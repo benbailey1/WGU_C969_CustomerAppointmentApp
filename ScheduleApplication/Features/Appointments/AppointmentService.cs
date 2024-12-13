@@ -17,6 +17,7 @@ namespace ScheduleApplication.Features.Appointments
         Task<AppointmentResult<bool>> DeleteAppointmentAsync(int id);
         Task<AppointmentResult<List<MonthlyAppointmentTypes>>> GetAppointmentTypesByMonthAsync();
         Task<AppointmentResult<Dictionary<string, List<AppointmentModel>>>> GetScheduleForEachUserAsync();
+        Task<AppointmentResult<List<LocationAppointmentSummary>>> GetAppointmentsByLocationAsync();
     }
     public class AppointmentService : IAppointmentService
     {
@@ -151,6 +152,48 @@ namespace ScheduleApplication.Features.Appointments
             catch (Exception ex)
             {
                 return AppointmentResult<Dictionary<string, List<AppointmentModel>>>.Failure($"Error getting appointments by user. {ex.Message}"); ;
+            }
+        }
+
+        public async Task<AppointmentResult<List<LocationAppointmentSummary>>> GetAppointmentsByLocationAsync()
+        {
+            try
+            {
+                var appointmentsRes = await GetAllAppointmentsAsync();
+
+                if (!appointmentsRes.IsSuccess)
+                {
+                    return AppointmentResult<List<LocationAppointmentSummary>>.Failure(appointmentsRes.Errors.First());
+                }
+
+                var locationSummaries = appointmentsRes.Value
+                    .GroupBy(a => a.Location ?? "Unspecified")
+                    .Select(group => new LocationAppointmentSummary
+                    {
+                        Location = group.Key,
+                        TotalAppointments = group.Count(),
+                        UniqueCustomers = group.Select(a => a.CustomerId).Distinct().Count(),
+                        AppointmentTypes = group.GroupBy(a => a.Type)
+                                            .Select(t => new TypeSummary
+                                            {
+                                                Type = t.Key,
+                                                Count = t.Count()
+                                            })
+                                            .OrderByDescending(t => t.Count)
+                                            .ToList(),
+                        UpcomingAppointments = group.Where(a => a.Start > DateTime.Now)
+                                                .OrderBy(a => a.Start)
+                                                .ToList()
+                    })
+                    .OrderByDescending(l => l.TotalAppointments)
+                    .ToList();
+
+                return AppointmentResult<List<LocationAppointmentSummary>>.Success(locationSummaries);
+            }
+            catch (Exception ex)
+            {
+                return AppointmentResult<List<LocationAppointmentSummary>>.Failure(
+                    $"Error getting appointments by location: {ex.Message}");
             }
         }
     }
