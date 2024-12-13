@@ -36,11 +36,7 @@ namespace ScheduleApplication.Features.Login
             this.AcceptButton = btnLogin;
         }
 
-        private void LoginForm_Load(object sender, EventArgs e)
-        {
-
-
-        }
+        private void LoginForm_Load(object sender, EventArgs e) { }
 
         private async void btnLogin_Click(object sender, EventArgs e)
         {
@@ -61,12 +57,9 @@ namespace ScheduleApplication.Features.Login
                     await ShowUpcomingAppointments();
 
                     this.Hide();
-
-                    using (var mainForm = new MainForm(LoggedInUserId, _dbConFact))
-                    {
-                        mainForm.FormClosed += (s, args) => this.Close();
-                        mainForm.Show();
-                    }
+                    var mainForm = new MainForm(LoggedInUserId, _dbConFact);
+                    mainForm.FormClosed += (s, args) => this.Close();
+                    mainForm.Show();
                 }
                 else
                 {

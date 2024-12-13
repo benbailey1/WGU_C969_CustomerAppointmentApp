@@ -1,6 +1,11 @@
 ﻿using ScheduleApplication.Features.Appointments.Models;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace ScheduleApplication.Features.Appointments
 {
@@ -10,6 +15,8 @@ namespace ScheduleApplication.Features.Appointments
         Task<AppointmentResult<List<AppointmentModel>>> GetAllAppointmentsAsync();
         Task<AppointmentResult<bool>> UpdateAppointmentAsync(AppointmentModel appt);
         Task<AppointmentResult<bool>> DeleteAppointmentAsync(int id);
+        Task<AppointmentResult<List<MonthlyAppointmentTypes>>> GetAppointmentTypesByMonthAsync();
+        Task<AppointmentResult<Dictionary<string, List<AppointmentModel>>>> GetScheduleForEachUserAsync();
     }
     public class AppointmentService : IAppointmentService
     {
@@ -87,6 +94,64 @@ namespace ScheduleApplication.Features.Appointments
             }
 
             return AppointmentResult<bool>.Success(true);
+        }
+
+        public async Task<AppointmentResult<List<MonthlyAppointmentTypes>>> GetAppointmentTypesByMonthAsync()
+        {
+            try
+            {
+                var appointmentsRes = await GetAllAppointmentsAsync();
+
+                if (!appointmentsRes.IsSuccess)
+                {
+                    return AppointmentResult<List<MonthlyAppointmentTypes>>.Failure(appointmentsRes.Errors.First());
+                }
+
+                var monthlyTypes = appointmentsRes.Value
+                    .GroupBy(a => a.Start.ToString("MMMM"))
+                    .Select(monthGroup => new MonthlyAppointmentTypes
+                    {
+                        Month = monthGroup.Key,
+                        TypeCounts = monthGroup
+                            .GroupBy(a => a.Type)
+                            .Select(typeGroup => new TypeCount
+                            {
+                                Type = typeGroup.Key,
+                                Count = typeGroup.Count()
+                            })
+                            .ToList()
+                    })
+                    .ToList();
+
+                return AppointmentResult<List<MonthlyAppointmentTypes>>.Success(monthlyTypes);
+            }
+            catch (Exception ex)
+            {
+                return AppointmentResult<List<MonthlyAppointmentTypes>>.Failure($"Error getting appointment types: {ex.Message}");
+            }
+        }
+
+        public async Task<AppointmentResult<Dictionary<string, List<AppointmentModel>>>> GetScheduleForEachUserAsync()
+        {
+            try
+            {
+                var appointmentsRes = await GetAllAppointmentsAsync();
+
+                if (!appointmentsRes.IsSuccess)
+                {
+                    return AppointmentResult<Dictionary<string, List<AppointmentModel>>>.Failure(appointmentsRes.Errors.First());
+                }
+
+                var userSched = appointmentsRes.Value 
+                                .GroupBy(a => a.UserId)
+                                .ToDictionary(g => g.Key.ToString(), g => g.ToList());
+
+                return AppointmentResult<Dictionary<string, List<AppointmentModel>>>.Success(userSched);
+            }
+            catch (Exception ex)
+            {
+                return AppointmentResult<Dictionary<string, List<AppointmentModel>>>.Failure($"Error getting appointments by user. {ex.Message}"); ;
+            }
         }
     }
 }
