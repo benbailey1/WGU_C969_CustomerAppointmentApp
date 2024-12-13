@@ -12,9 +12,11 @@ namespace ScheduleApplication.Features.Appointments
 {
     public partial class AppointmentManagementForm : Form
     {
-        public AppointmentManagementForm()
+        private readonly IAppointmentService _apptService;
+        public AppointmentManagementForm(IAppointmentService apptService)
         {
             InitializeComponent();
+            _apptService = apptService;
         }
     }
 }

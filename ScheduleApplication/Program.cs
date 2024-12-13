@@ -1,8 +1,6 @@
 ﻿using ScheduleApplication.Features.Login;
+using ScheduleApplication.Shared.Infrastructure.Database;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ScheduleApplication
@@ -18,13 +16,13 @@ namespace ScheduleApplication
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            // Dependencies
-            //  var dbConnection = new MySqlConnectionFactory();
-            var userRepository = new UserLoginRepository(dbConnection);
-            var authService = new AuthService(userRepository);
+            // Configure Dependencies for initial form
+            IDbConnectionFactory dbConnectionFactory = new DBConnectionFactory();
+            IUserLoginRepository userRepository = new UserLoginRepository(dbConnectionFactory);
+            IAuthService authService = new AuthService(userRepository);
 
-
-            Application.Run(new Form1());
+            // Create and run Login form
+            Application.Run(new LoginForm(authService, dbConnectionFactory));
         }
     }
 }

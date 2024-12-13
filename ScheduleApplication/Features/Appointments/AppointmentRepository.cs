@@ -1,12 +1,10 @@
 ﻿using MySql.Data.MySqlClient;
-using MySqlX.XDevAPI.Common;
 using ScheduleApplication.Features.Appointments.Models;
 using ScheduleApplication.Shared.Classes;
 using ScheduleApplication.Shared.Infrastructure.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 

@@ -90,7 +90,7 @@ namespace ScheduleApplication.Features.Customers
                 {
                     MessageBox.Show($"Customer with ID {customerId} was not found");
                     // TODO: LOG THIS
-                    return Result<CustomerResponse>.NotFound($"Customer with ID {customerId} was not found.")
+                    return Result<CustomerResponse>.NotFound($"Customer with ID {customerId} was not found.");
                 }
 
                 if (!result.IsSuccess)
@@ -106,7 +106,8 @@ namespace ScheduleApplication.Features.Customers
             {
                 MessageBox.Show($"Error occurred while retrieving customer: {ex.Message}");
                 // TODO: LOG THIS
-                return Result<CustomerResponse>.Failure($"An unexpected error occurred while retrieving customer: {ex.Message}")
+                return Result<CustomerResponse>.Failure(
+                    $"An unexpected error occurred while retrieving customer: {ex.Message}");
             }
         }
 
