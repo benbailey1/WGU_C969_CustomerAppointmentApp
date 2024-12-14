@@ -15,7 +15,7 @@ namespace ScheduleApplication.Features.Customers
         Task<Result<bool>> UpdateCustomerAsync(Customer customer);
         Task<Result<bool>> DeleteCustomerAsync(int customerId);
     }
-    public class CustomerService
+    public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepo _customerRepo;
         public CustomerService(ICustomerRepo customerRepo) 

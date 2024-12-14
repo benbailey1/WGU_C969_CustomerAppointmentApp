@@ -582,7 +582,12 @@ namespace ScheduleApplication.Features.Main
         private void ShowCustomerManagement()
         {
             contentPanel.Controls.Clear();
-            var customerForm = new CustomerManagementForm();
+
+            var dbFactory = new DBConnectionFactory();
+            var customerRepo = new CustomerRepository(dbFactory);
+            var customerService = new CustomerService(customerRepo);
+
+            var customerForm = new CustomerManagementForm(customerService);
             customerForm.TopLevel = false;
             customerForm.FormBorderStyle = FormBorderStyle.None;
             customerForm.Dock = DockStyle.Fill;

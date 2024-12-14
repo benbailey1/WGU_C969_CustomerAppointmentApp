@@ -76,10 +76,10 @@ namespace ScheduleApplication.Features.Customers
                                      City.city AS city, Address.postalCode AS postalCode,
                                      Country.country AS country
                                      FROM Customer
-                                     INNER JOIN Address ON Customer.addressId = Address.id
-                                     INNER JOIN City ON Address.cityId = City.id
-                                     INNER JOIN Country ON City.countryId = Country.Id
-                                     ORDER BY Customer.customerName Desc;";
+                                     INNER JOIN Address ON Customer.addressId = Address.addressId
+                                     INNER JOIN City ON Address.cityId = City.cityId
+                                     INNER JOIN Country ON City.countryId = Country.countryId;";
+                                    // ORDER BY Customer.customerName Desc;";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
@@ -130,9 +130,9 @@ namespace ScheduleApplication.Features.Customers
                                      City.city AS city, Address.postalCode AS postalCode,
                                      Country.country AS country
                                      FROM Customer
-                                     INNER JOIN Address ON Customer.addressId = Address.id
-                                     INNER JOIN City ON Address.cityId = City.id
-                                     INNER JOIN Country ON City.countryId = Country.Id
+                                     INNER JOIN Address ON Customer.addressId = Address.addressId
+                                     INNER JOIN City ON Address.cityId = City.cityId
+                                     INNER JOIN Country ON City.countryId = Country.countryId
                                      WHERE Customer.customerId = @customerId;";
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))

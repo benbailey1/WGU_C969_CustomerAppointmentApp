@@ -119,6 +119,18 @@
     </Compile>
     <Compile Include="Features\Calendar\CalendarService.cs" />
     <Compile Include="Features\Customers\Customer.cs" />
+    <Compile Include="Features\Customers\CustomerDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\Customers\CustomerDetailForm.Designer.cs">
+      <DependentUpon>CustomerDetailForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Features\Customers\CustomerDetailFormOLD.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Features\Customers\CustomerDetailFormOLD.Designer.cs">
+      <DependentUpon>CustomerDetailFormOLD.cs</DependentUpon>
+    </Compile>
     <Compile Include="Features\Customers\CustomerManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -166,6 +178,12 @@
     <Compile Include="Shared\Classes\User.cs" />
     <EmbeddedResource Include="Features\Calendar\CalendarForm.resx">
       <DependentUpon>CalendarForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\Customers\CustomerDetailForm.resx">
+      <DependentUpon>CustomerDetailForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Features\Customers\CustomerManagementForm.resx">
+      <DependentUpon>CustomerManagementForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Features\Login\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
