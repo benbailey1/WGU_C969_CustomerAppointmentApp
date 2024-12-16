@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ScheduleApplication.Shared.Domain.Cities;
+using System;
 using System.Windows.Forms;
 
 namespace ScheduleApplication.Features.Customers
@@ -6,10 +7,12 @@ namespace ScheduleApplication.Features.Customers
     public partial class CustomerManagementForm : Form
     {
         private readonly ICustomerService _customerService;
+        private readonly ICityRepository _cityRepository;
         private bool _isLoading = false;
-        public CustomerManagementForm(ICustomerService customerService)
+        public CustomerManagementForm(ICustomerService customerService, ICityRepository cityRepository)
         {
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
+            _cityRepository = cityRepository ?? throw new ArgumentNullException(nameof(cityRepository));
             InitializeComponent();
             SetupDataGridView();
             LoadCustomers();
@@ -72,7 +75,7 @@ namespace ScheduleApplication.Features.Customers
 
         private void btnAddCustomer_Click(object sender, EventArgs e)
         {
-            using (var detailForm = new CustomerDetailForm(_customerService))
+            using (var detailForm = new CustomerDetailForm(_customerService, _cityRepository))
             {
                 if (detailForm.ShowDialog() == DialogResult.OK)
                 {
@@ -86,7 +89,7 @@ namespace ScheduleApplication.Features.Customers
             if (customerGridView.SelectedRows.Count == 0) return;
 
             var customer = (CustomerResponse)customerGridView.SelectedRows[0].DataBoundItem;
-            using (var detailForm = new CustomerDetailForm(_customerService, customer.CustomerId))
+            using (var detailForm = new CustomerDetailForm(_customerService, _cityRepository, customer.CustomerId))
             {
                 if (detailForm.ShowDialog() == DialogResult.OK)
                 {

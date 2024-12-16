@@ -34,15 +34,24 @@ namespace ScheduleApplication.Features.Customers
             try
             {
                 var cities = await _cityRepo.GetAllCitiesAsync();
-
-                comboBoxCity.DataSource = cities;
-                comboBoxCity.DisplayMember = "CityName";
-                comboBoxCity.ValueMember = "CityId";
-                comboBoxCity.SelectedIndex = -1;
+                if (cities != null && cities.Any())
+                {
+                    comboBoxCity.DataSource = cities;
+                    comboBoxCity.DisplayMember = "CityName";
+                    comboBoxCity.ValueMember = "CityId";
+                    comboBoxCity.SelectedIndex = -1;
+                }
+                else
+                {
+                    MessageBox.Show("No cities found in the database.", "Warning",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+               
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading cities: {ex.Message}");
+                MessageBox.Show($"Error loading cities: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
         private void SetupErrorLabels()
@@ -71,10 +80,15 @@ namespace ScheduleApplication.Features.Customers
                 txtCustomerName.Text = result.Value.CustomerName;
                 txtAddress1.Text = result.Value.Address1;
                 txtAddress2.Text = result.Value.Address2;
-                comboBoxCity.DisplayMember = "CityName"; // TODO: I'm not sure this is correct -- verify
-                // comboBoxCity.Text = result.Value.City;
                 txtPostalCode.Text = result.Value.PostalCode;
                 txtPhone.Text = result.Value.Phone;
+
+                var cities = (List<City>)comboBoxCity.DataSource;
+                var cityIndex = cities.FindIndex(c => c.CityId.ToString() == result.Value.City);
+                if (cityIndex < 0)
+                {
+                    comboBoxCity.SelectedIndex = cityIndex;
+                }
             }
         }
 
@@ -85,6 +99,9 @@ namespace ScheduleApplication.Features.Customers
             ClearErrors();
             if (!ValidateInput()) return;
 
+            int selectedCityId = comboBoxCity.SelectedItem != null ?
+                ((City)comboBoxCity.SelectedItem).CityId : -1;
+
             var customer = new Customer
             {
                 CustomerId = _customerId ?? 0,
@@ -93,7 +110,7 @@ namespace ScheduleApplication.Features.Customers
                 {
                     Address1 = txtAddress1.Text.Trim(),
                     Address2 = txtAddress2.Text.Trim(),
-                    CityId = 1,
+                    CityId = selectedCityId,
                     PostalCode = txtPostalCode.Text.Trim(),
                     Phone = txtPhone.Text.Trim()
                 },
@@ -146,6 +163,9 @@ namespace ScheduleApplication.Features.Customers
 
         private bool ValidateInput()
         {
+            int selectedCityId = comboBoxCity.SelectedItem != null ?
+                ((City)comboBoxCity.SelectedItem).CityId : -1;
+
             var customer = new Customer
             {
                 CustomerName = txtCustomerName.Text.Trim(),
@@ -153,7 +173,7 @@ namespace ScheduleApplication.Features.Customers
                 {
                     Address1 = txtAddress1.Text.Trim(),
                     Address2 = txtAddress2.Text.Trim(),
-                    CityId = comboBoxCity.SelectedIndex,
+                    CityId = selectedCityId,
                     PostalCode = txtPostalCode.Text.Trim(),
                     Phone = txtPhone.Text.Trim()
                 }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using ScheduleApplication.Features.Appointments;
 using ScheduleApplication.Features.Customers;
+using ScheduleApplication.Shared.Domain.Cities;
 using ScheduleApplication.Shared.Infrastructure.Database;
 
 namespace ScheduleApplication.Features.Main
@@ -585,9 +586,10 @@ namespace ScheduleApplication.Features.Main
 
             var dbFactory = new DBConnectionFactory();
             var customerRepo = new CustomerRepository(dbFactory);
+            var cityRepo = new CityRepository(dbFactory);
             var customerService = new CustomerService(customerRepo);
 
-            var customerForm = new CustomerManagementForm(customerService);
+            var customerForm = new CustomerManagementForm(customerService, cityRepo);
             customerForm.TopLevel = false;
             customerForm.FormBorderStyle = FormBorderStyle.None;
             customerForm.Dock = DockStyle.Fill;
