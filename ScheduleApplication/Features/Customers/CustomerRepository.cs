@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Windows.Forms;
 
 namespace ScheduleApplication.Features.Customers
@@ -33,26 +34,66 @@ namespace ScheduleApplication.Features.Customers
                 {
                     await conn.OpenAsync();
 
-                    string query = @"INSERT INTO customer
+                    using (var trans = conn.BeginTransaction())
+                    {
+                        try
+                        {
+                            string addressQuery = @"INSERT INTO address 
+                                    (address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy)
+                                    VALUES 
+                                    (@address, @address2, @cityId, @postalCode, @phone, NOW(), @createdBy, NOW(), @lastUpdateBy);
+                                    SELECT LAST_INSERT_ID();";
+
+                            int addressId;
+                            using (MySqlCommand addressCmd = new MySqlCommand(addressQuery, conn))
+                            {
+                                addressCmd.Transaction = trans;
+                                var p = addressCmd.Parameters;
+
+                                p.AddWithValue("@address", customer.Address.Address1);
+                                p.AddWithValue("@address2", customer.Address.Address2 ?? string.Empty);
+                                p.AddWithValue("@cityId", customer.Address.CityId);
+                                p.AddWithValue("@postalCode", customer.Address.PostalCode);
+                                p.AddWithValue("@phone", customer.Address.Phone);
+                                p.AddWithValue("@createdBy", customer.AuditInfo.CreatedBy);
+                                p.AddWithValue("@lastUpdateBy", customer.AuditInfo.LastUpdateBy);
+
+                                addressId = Convert.ToInt32(await addressCmd.ExecuteScalarAsync());
+                            }
+
+                            string customerQuery = @"INSERT INTO customer
                                     (customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateBy)
                                     VALUES
-                                    (@customerName, @addressId, @active, NOW(), @createdBy, NOW(), @lastUpdateBy)
+                                    (@customerName, @addressId, @active, NOW(), @createdBy, NOW(), @lastUpdateBy);
                                     SELECT LAST_INSERT_ID();";
-                                
 
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
-                    {
-                        var param = cmd.Parameters;
+                            int customerId;
 
-                        param.AddWithValue("@customerName", customer.CustomerName);
-                        param.AddWithValue("@addressId", customer.Address.AddressId);
-                        param.AddWithValue("@active", customer.Active);
-                        param.AddWithValue("@createdBy", customer.AuditInfo.CreatedBy);
-                        param.AddWithValue("@lastUpdateBy", customer.AuditInfo.LastUpdate);
+                            using (MySqlCommand customerCmd = new MySqlCommand(customerQuery, conn))
+                            {
+                                customerCmd.Transaction = trans;
+                                var p = customerCmd.Parameters;
 
-                        var newId = Convert.ToInt32(await cmd.ExecuteScalarAsync());
-                        MessageBox.Show($"Customer {newId} added successfully.");
-                        return Result<int>.Success(newId);
+                                p.AddWithValue("@customerName", customer.CustomerName);
+                                p.AddWithValue("@addressId", addressId);
+                                p.AddWithValue("@active", customer.Active);
+                                p.AddWithValue("@createdBy", customer.AuditInfo.CreatedBy);
+                                p.AddWithValue("@lastUpdateBy", customer.AuditInfo.LastUpdateBy);
+
+                                customerId = Convert.ToInt32(await customerCmd.ExecuteScalarAsync());
+                            }
+
+                            trans.Commit();
+
+                            MessageBox.Show($"Customer {customer.CustomerName} added successfully");
+                            return Result<int>.Success(customerId);
+                        }
+                        catch (Exception ex)
+                        {
+                            // Rollback both operations if either fail
+                            trans.Rollback();
+                            throw;
+                        }
                     }
                 }
             }
