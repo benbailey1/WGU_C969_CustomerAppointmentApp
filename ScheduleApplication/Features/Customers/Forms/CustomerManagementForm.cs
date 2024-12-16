@@ -72,7 +72,7 @@ namespace ScheduleApplication.Features.Customers
 
         private void btnAddCustomer_Click(object sender, EventArgs e)
         {
-            using (var detailForm = new CustomerDetailFormOLD(_customerService))
+            using (var detailForm = new CustomerDetailForm(_customerService))
             {
                 if (detailForm.ShowDialog() == DialogResult.OK)
                 {
@@ -86,7 +86,7 @@ namespace ScheduleApplication.Features.Customers
             if (customerGridView.SelectedRows.Count == 0) return;
 
             var customer = (CustomerResponse)customerGridView.SelectedRows[0].DataBoundItem;
-            using (var detailForm = new CustomerDetailFormOLD(_customerService, customer.CustomerId))
+            using (var detailForm = new CustomerDetailForm(_customerService, customer.CustomerId))
             {
                 if (detailForm.ShowDialog() == DialogResult.OK)
                 {

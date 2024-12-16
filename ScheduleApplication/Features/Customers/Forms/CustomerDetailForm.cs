@@ -1,36 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ScheduleApplication.Shared.Classes;
-using ScheduleApplication.Shared.Infrastructure.Database;
+using ScheduleApplication.Shared.Domain.Cities;
 
 namespace ScheduleApplication.Features.Customers
 {
-    public partial class CustomerDetailFormOLD : Form
+    public partial class CustomerDetailForm : Form
     {
         private readonly ICustomerService _customerService;
+        private readonly ICityRepository _cityRepo;
         private readonly int? _customerId;
         private bool _hasUnsavedChanges;
         private Dictionary<string, Label> _errorLabels;
-
-        public CustomerDetailFormOLD(ICustomerService customerService, int? customerId = null)
+        public CustomerDetailForm(ICustomerService customerService, ICityRepository cityRepo, int? customerId = null)
         {
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
+            _cityRepo = cityRepo ?? throw new ArgumentNullException(nameof(cityRepo));
             _customerId = customerId;
             InitializeComponent();
             SetupErrorLabels();
+            GetCities();
             if (_customerId.HasValue)
             {
                 LoadCustomer();
             }
         }
 
+        private async void GetCities()
+        {
+            try
+            {
+                var cities = await _cityRepo.GetAllCitiesAsync();
+
+                comboBoxCity.DataSource = cities;
+                comboBoxCity.DisplayMember = "CityName";
+                comboBoxCity.ValueMember = "CityId";
+                comboBoxCity.SelectedIndex = -1;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading cities: {ex.Message}");
+            }
+        }
         private void SetupErrorLabels()
         {
             _errorLabels = new Dictionary<string, Label>
@@ -57,7 +71,8 @@ namespace ScheduleApplication.Features.Customers
                 txtCustomerName.Text = result.Value.CustomerName;
                 txtAddress1.Text = result.Value.Address1;
                 txtAddress2.Text = result.Value.Address2;
-                txtCity.Text = result.Value.City;
+                comboBoxCity.DisplayMember = "CityName"; // TODO: I'm not sure this is correct -- verify
+                // comboBoxCity.Text = result.Value.City;
                 txtPostalCode.Text = result.Value.PostalCode;
                 txtPhone.Text = result.Value.Phone;
             }
@@ -138,6 +153,7 @@ namespace ScheduleApplication.Features.Customers
                 {
                     Address1 = txtAddress1.Text.Trim(),
                     Address2 = txtAddress2.Text.Trim(),
+                    CityId = comboBoxCity.SelectedIndex,
                     PostalCode = txtPostalCode.Text.Trim(),
                     Phone = txtPhone.Text.Trim()
                 }
@@ -185,14 +201,5 @@ namespace ScheduleApplication.Features.Customers
             }
             base.OnFormClosing(e);
         }
-
-        private TextBox txtCustomerName;
-        private TextBox txtAddress1;
-        private TextBox txtAddress2;
-        private TextBox txtCity;
-        private TextBox txtPostalCode;
-        private TextBox txtPhone;
-        private Button btnSave;
-        private Button btnCancel;
     }
 }

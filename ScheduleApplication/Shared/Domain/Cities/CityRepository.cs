@@ -33,12 +33,6 @@ namespace ScheduleApplication.Shared.Domain.Cities
                     {
                         using (var reader = await command.ExecuteReaderAsync())
                         {
-                            // TODO: DELETE - for loop is just for testing purposes -- delete 
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                string columnName = reader.GetName(i);
-                                Console.WriteLine($"Column {i}: {columnName}");
-                            }
 
                             while (await reader.ReadAsync())
                             {
@@ -115,19 +109,6 @@ namespace ScheduleApplication.Shared.Domain.Cities
                     {
                         if (await reader.ReadAsync())
                         {
-                            //return new City
-                            //{
-                            //    CityId = reader.GetInt32("cityId"),
-                            //    CityName = reader.GetString("city"),
-                            //    CountryId = reader.GetInt32("countryId"),
-                            //    AuditInfo = new AuditInfo
-                            //    {
-                            //        CreateDate = reader.GetDateTime("createDate"),
-                            //        CreatedBy = reader.GetString("createdBy"),
-                            //        LastUpdate = reader.GetDateTime("lastUpdate"),
-                            //        LastUpdateBy = reader.GetString("lastUpdateBy")
-                            //    }
-                            //};
 
                             City city = new City()
                             {

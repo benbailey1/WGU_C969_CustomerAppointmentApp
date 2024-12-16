@@ -98,19 +98,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Features\Appointments\AppointmentModel.cs" />
-    <Compile Include="Features\Appointments\AppointmentManagementForm.cs">
+    <Compile Include="Features\Appointments\Models\AppointmentModel.cs" />
+    <Compile Include="Features\Appointments\Forms\AppointmentManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\Appointments\AppointmentManagementForm.Designer.cs">
+    <Compile Include="Features\Appointments\Forms\AppointmentManagementForm.Designer.cs">
       <DependentUpon>AppointmentManagementForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Features\Appointments\AppointmentRepository.cs" />
     <Compile Include="Features\Appointments\AppointmentService.cs" />
-    <Compile Include="Features\Appointments\AppointmentResult.cs" />
-    <Compile Include="Features\Appointments\AppointmentValidator.cs" />
+    <Compile Include="Features\Appointments\Models\AppointmentResult.cs" />
+    <Compile Include="Features\Appointments\Models\AppointmentValidator.cs" />
     <Compile Include="Features\Appointments\Models\LocationAppointmentSummary.cs" />
-    <Compile Include="Features\Appointments\MonthlyAppointmentTypes.cs" />
+    <Compile Include="Features\Appointments\Models\MonthlyAppointmentTypes.cs" />
     <Compile Include="Features\Calendar\CalendarForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,38 +118,32 @@
       <DependentUpon>CalendarForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Features\Calendar\CalendarService.cs" />
-    <Compile Include="Features\Customers\Customer.cs" />
-    <Compile Include="Features\Customers\CustomerDetailForm.cs">
+    <Compile Include="Features\Customers\Models\Customer.cs" />
+    <Compile Include="Features\Customers\Forms\CustomerDetailForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\Customers\CustomerDetailForm.Designer.cs">
+    <Compile Include="Features\Customers\Forms\CustomerDetailForm.Designer.cs">
       <DependentUpon>CustomerDetailForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\Customers\CustomerDetailFormOLD.cs">
+    <Compile Include="Features\Customers\Forms\CustomerManagementForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\Customers\CustomerDetailFormOLD.Designer.cs">
-      <DependentUpon>CustomerDetailFormOLD.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Features\Customers\CustomerManagementForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Features\Customers\CustomerManagementForm.Designer.cs">
+    <Compile Include="Features\Customers\Forms\CustomerManagementForm.Designer.cs">
       <DependentUpon>CustomerManagementForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Features\Customers\CustomerRepository.cs" />
-    <Compile Include="Features\Customers\CustomerResponse.cs" />
+    <Compile Include="Features\Customers\Models\CustomerResponse.cs" />
     <Compile Include="Features\Customers\CustomerService.cs" />
-    <Compile Include="Features\Customers\CustomerValidator.cs" />
-    <Compile Include="Features\Login\AuthResult.cs" />
+    <Compile Include="Features\Customers\Models\CustomerValidator.cs" />
+    <Compile Include="Features\Login\Models\AuthResult.cs" />
     <Compile Include="Features\Login\AuthService.cs" />
-    <Compile Include="Features\Login\LoginForm.cs">
+    <Compile Include="Features\Login\Forms\LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Features\Login\LoginForm.Designer.cs">
+    <Compile Include="Features\Login\Forms\LoginForm.Designer.cs">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Features\Login\UserLoginModel.cs" />
+    <Compile Include="Features\Login\Models\UserLoginModel.cs" />
     <Compile Include="Features\Login\UserLoginRepository.cs" />
     <Compile Include="Features\Main\MainForm.cs">
       <SubType>Form</SubType>
@@ -179,13 +173,13 @@
     <EmbeddedResource Include="Features\Calendar\CalendarForm.resx">
       <DependentUpon>CalendarForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\Customers\CustomerDetailForm.resx">
+    <EmbeddedResource Include="Features\Customers\Forms\CustomerDetailForm.resx">
       <DependentUpon>CustomerDetailForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\Customers\CustomerManagementForm.resx">
+    <EmbeddedResource Include="Features\Customers\Forms\CustomerManagementForm.resx">
       <DependentUpon>CustomerManagementForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Features\Login\LoginForm.resx">
+    <EmbeddedResource Include="Features\Login\Forms\LoginForm.resx">
       <DependentUpon>LoginForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Features\Main\MainForm.resx">
