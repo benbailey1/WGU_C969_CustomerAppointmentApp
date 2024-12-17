@@ -1,14 +1,22 @@
-﻿using MySql.Data.MySqlClient;
-using ScheduleApplication.Shared.Classes;
-using ScheduleApplication.Shared.Infrastructure.Database;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
+using ScheduleApplication.Shared.Classes;
+using ScheduleApplication.Shared.Domain.Cities;
+using ScheduleApplication.Shared.Infrastructure.Database;
 using System.Windows.Forms;
 
-
-namespace ScheduleApplication.Shared.Domain.Cities
+namespace ScheduleApplication.Shared.Domain.Reopsitories
 {
+    public interface ICityRepository
+    {
+        Task<List<City>> GetAllCitiesAsync();
+        Task<City> GetCityByIdAsync(int cityId);
+        Task<int> AddCityAsync(City city);
+        Task UpdateCityAsync(City city);
+        Task DeleteCityAsync(int cityId);
+    }
     public class CityRepository : ICityRepository
     {
         private readonly IDbConnectionFactory _connectionFactory;

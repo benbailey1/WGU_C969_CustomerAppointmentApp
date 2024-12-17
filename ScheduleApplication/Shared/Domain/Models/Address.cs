@@ -1,6 +1,4 @@
-﻿using ScheduleApplication.Shared.Domain;
-
-namespace ScheduleApplication.Shared.Classes
+﻿namespace ScheduleApplication.Shared.Classes
 {
     public class Address
     {

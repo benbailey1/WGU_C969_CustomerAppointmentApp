@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using ScheduleApplication.Features.Appointments;
 using ScheduleApplication.Features.Calendar;
@@ -25,7 +22,6 @@ namespace ScheduleApplication.Features.Main
 
             InitializeComponent();
 
-            // Add immediate visual feedback
             this.BackColor = Color.White;
             Label loadingLabel = new Label
             {
@@ -40,7 +36,6 @@ namespace ScheduleApplication.Features.Main
 
             Console.WriteLine($"Navigated to Main Form. User ID: {_loggedInUserId}");
 
-            // Set form properties
             this.StartPosition = FormStartPosition.CenterScreen;
             this.WindowState = FormWindowState.Normal;
 
@@ -55,12 +50,6 @@ namespace ScheduleApplication.Features.Main
 
         }
 
-        // TODO: DELETE -- verify this isn't used 
-        //private void btnManageAppointments_Click(object sender, EventArgs e)
-        //{
-        //    AppointmentManagementForm appointmentForm = new AppointmentManagementForm(_apptService);
-        //    appointmentForm.Show();
-        //}
 
         private void SetupNavigationTreeView()
         {
@@ -151,7 +140,6 @@ namespace ScheduleApplication.Features.Main
                 };
                 contentPanel.Controls.Add(loadingLabel);
 
-                // TODO: SHOW CALENDAR FORM
 
                 var dbFactory = new DBConnectionFactory();
                 var apptRepo = new AppointmentRepository(dbFactory);
@@ -300,7 +288,7 @@ namespace ScheduleApplication.Features.Main
             dt.Columns.Add("Appointment Type", typeof(string));
             dt.Columns.Add("Count", typeof(int));
 
-            foreach (var month in data.OrderBy(m => DateTime.ParseExact(m.Month, "MMMM", null)))
+            foreach (var month in data.OrderBy(m => DateTime.ParseExact(m.Month, "MMMM", null).ToLocalTime()))
             {
                 foreach (var typeCount in month.TypeCounts.OrderByDescending(tc => tc.Count))
                 {
@@ -450,7 +438,7 @@ namespace ScheduleApplication.Features.Main
 
                 gridView.DataSource = dt;
 
-                gridView.Columns["Start Date"].DefaultCellStyle.Format = "g";
+                gridView.Columns["Start Date"].HeaderText = $"Start Date ({TimeZoneInfo.Local.DisplayName})";
                 gridView.Columns["End Date"].DefaultCellStyle.Format = "g";
 
                 Label summaryLabel = new Label
@@ -501,7 +489,6 @@ namespace ScheduleApplication.Features.Main
 
                 contentPanel.Controls.Remove(loadingLabel);
 
-                // Create report container
                 Panel reportPanel = new Panel
                 {
                     Dock = DockStyle.Fill,
@@ -509,7 +496,6 @@ namespace ScheduleApplication.Features.Main
                 };
                 contentPanel.Controls.Add(reportPanel);
 
-                // Create title label
                 Label titleLabel = new Label
                 {
                     Text = "Appointments By Location Report",
@@ -519,7 +505,6 @@ namespace ScheduleApplication.Features.Main
                 };
                 reportPanel.Controls.Add(titleLabel);
 
-                // Create location summary grid
                 DataGridView summaryGrid = new DataGridView
                 {
                     Location = new Point(10, titleLabel.Bottom + 20),
@@ -537,7 +522,6 @@ namespace ScheduleApplication.Features.Main
                     AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.AliceBlue }
                 };
 
-                // Create and populate summary DataTable
                 DataTable summaryDt = new DataTable();
                 summaryDt.Columns.Add("Location", typeof(string));
                 summaryDt.Columns.Add("Total Appointments", typeof(int));
@@ -559,7 +543,6 @@ namespace ScheduleApplication.Features.Main
                 summaryGrid.DataSource = summaryDt;
                 reportPanel.Controls.Add(summaryGrid);
 
-                // Add label for upcoming appointments section
                 Label upcomingLabel = new Label
                 {
                     Text = "Upcoming Appointments by Location",
@@ -569,7 +552,6 @@ namespace ScheduleApplication.Features.Main
                 };
                 reportPanel.Controls.Add(upcomingLabel);
 
-                // Create upcoming appointments grid
                 DataGridView upcomingGrid = new DataGridView
                 {
                     Location = new Point(10, upcomingLabel.Bottom + 10),
@@ -587,7 +569,6 @@ namespace ScheduleApplication.Features.Main
                     AlternatingRowsDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.AliceBlue }
                 };
 
-                // Create and populate upcoming appointments DataTable
                 DataTable upcomingDt = new DataTable();
                 upcomingDt.Columns.Add("Location", typeof(string));
                 upcomingDt.Columns.Add("Customer", typeof(string));
@@ -612,15 +593,12 @@ namespace ScheduleApplication.Features.Main
                 upcomingGrid.DataSource = upcomingDt;
                 reportPanel.Controls.Add(upcomingGrid);
 
-                // Format datetime columns
                 upcomingGrid.Columns["Start Time"].DefaultCellStyle.Format = "g";
                 upcomingGrid.Columns["End Time"].DefaultCellStyle.Format = "g";
 
-                // Auto-resize columns for best fit
                 summaryGrid.AutoResizeColumns();
                 upcomingGrid.AutoResizeColumns();
 
-                // Refresh the panel
                 reportPanel.Refresh();
             }
             catch (Exception ex)
