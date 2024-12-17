@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using ScheduleApplication.Shared.Classes;
-using ScheduleApplication.Shared.Domain.Cities;
+using ScheduleApplication.Shared.Domain.Reopsitories;
 
 namespace ScheduleApplication.Features.Customers
 {
@@ -92,10 +92,9 @@ namespace ScheduleApplication.Features.Customers
                 txtPhone.Text = result.Value.Phone;
 
                 var cities = (List<City>)comboBoxCity.DataSource;
-                var cityIndex = cities.FindIndex(c => c.CityId.ToString() == result.Value.City);
-                if (cityIndex < 0)
+                var cityIndex = cities.FindIndex(c => c.CityName == result.Value.City);
+                if (cityIndex >= 0)
                 {
-                    Console.WriteLine($"the city index is {cityIndex}");
                     comboBoxCity.SelectedIndex = cityIndex;
                 }
             }

@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using ScheduleApplication.Features.Appointments;
 using ScheduleApplication.Features.Calendar;
 using ScheduleApplication.Features.Customers;
-using ScheduleApplication.Shared.Domain.Cities;
+using ScheduleApplication.Shared.Domain.Reopsitories;
 using ScheduleApplication.Shared.Infrastructure.Database;
 
 namespace ScheduleApplication.Features.Main
