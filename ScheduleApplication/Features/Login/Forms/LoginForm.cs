@@ -52,7 +52,7 @@ namespace ScheduleApplication.Features.Login
                 if (authResult.IsSuccess)
                 {
                     LoggedInUserId = authResult.Value.UserId;
-                    _authService.LogUserLogin(username);
+                    _authService.LogUserLogin(username, true);
 
                     await ShowUpcomingAppointments();
 
@@ -64,6 +64,7 @@ namespace ScheduleApplication.Features.Login
                 else
                 {
                     MessageBox.Show(GetLocalizedString(authResult.Error));
+                    _authService.LogUserLogin(username, false);
                     textPassword.Clear();
                     textPassword.Focus();
                 }
@@ -80,7 +81,7 @@ namespace ScheduleApplication.Features.Login
             try
             {
                 var appointments = await _authService.GetUpcomingAppointmentsAsync(LoggedInUserId);
-
+                
                 if (appointments.Any())
                 {
                     StringBuilder message = new StringBuilder();

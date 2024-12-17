@@ -153,7 +153,17 @@ namespace ScheduleApplication.Features.Main
 
                 // TODO: SHOW CALENDAR FORM
 
-                CalendarForm calendarForm = new CalendarForm();
+                var dbFactory = new DBConnectionFactory();
+                var apptRepo = new AppointmentRepository(dbFactory);
+
+                var calendarForm = new CalendarForm(apptRepo);
+                calendarForm.TopLevel = false;
+                calendarForm.FormBorderStyle = FormBorderStyle.None;
+                calendarForm.Dock = DockStyle.Fill;
+
+                contentPanel.Controls.Remove(loadingLabel);
+
+                contentPanel.Controls.Add(calendarForm);
                 calendarForm.Show();
             }
             catch (Exception ex)

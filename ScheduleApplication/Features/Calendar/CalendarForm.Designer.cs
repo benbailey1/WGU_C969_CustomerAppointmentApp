@@ -40,6 +40,7 @@
             this.AppointmentCalendar.Margin = new System.Windows.Forms.Padding(12, 11, 12, 11);
             this.AppointmentCalendar.Name = "AppointmentCalendar";
             this.AppointmentCalendar.TabIndex = 1;
+            this.AppointmentCalendar.DateChanged += new System.Windows.Forms.DateRangeEventHandler(this.AppointmentCalendar_DateChanged);
             // 
             // dataGridViewAppointments
             // 

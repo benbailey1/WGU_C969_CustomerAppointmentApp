@@ -14,7 +14,7 @@ namespace ScheduleApplication.Features.Login
     {
         Task<AuthResult<UserLoginModel>> AuthenticateAsync(string username, string password);
         Task<List<AppointmentModel>> GetUpcomingAppointmentsAsync(int userId);
-        void LogUserLogin(string username);
+        void LogUserLogin(string username, bool loginSuccess);
     }
     public class AuthService : IAuthService
     {
@@ -54,19 +54,39 @@ namespace ScheduleApplication.Features.Login
             }
             catch (Exception ex)
             {
+
                 return AuthResult<UserLoginModel>.Failure($"Authentication error: {ex.Message}");
             }
         }
 
-        public void LogUserLogin(string username)
+        public void LogUserLogin(string username, bool loginSuccess)
         {
             try
             {
-                string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Login_History.txt");
-                string logEntry = $"{DateTime.UtcNow:yyy-MM-dd HH:mm:ss UTC}: User '{username}' logged in from {Environment.MachineName}";
+                // string logFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Login_History.txt");
 
-                Directory.CreateDirectory(Path.GetDirectoryName(logFilePath));
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string solutionDir = Directory.GetParent(baseDir).Parent.Parent.FullName;
 
+                string loggingDir = Path.Combine(solutionDir, "Features", "Logging");
+                string logFilePath = Path.Combine(loggingDir, "Login_History.txt");
+
+                if (!Directory.Exists(loggingDir))
+                {
+                    Directory.CreateDirectory(loggingDir);
+                }
+
+                string logEntry;
+
+                if (!loginSuccess)
+                {
+                    logEntry = $"{DateTime.UtcNow:yyy-MM-dd HH:mm:ss UTC}: User login failed {Environment.MachineName}";
+                }
+                else
+                {
+                    logEntry = $"{DateTime.UtcNow:yyy-MM-dd HH:mm:ss UTC}: User '{username}' logged in from {Environment.MachineName}";
+                }
+              
                 using (StreamWriter sw = File.AppendText(logFilePath))
                 {
                     sw.WriteLine(logEntry);

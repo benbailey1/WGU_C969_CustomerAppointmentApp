@@ -5,13 +5,9 @@ using System.Data;
 using System.Data.Common;
 using System.Data.Odbc;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySql.Data.MySqlClient;
-using ScheduleApplication.Features.Appointments.Models;
-using ScheduleApplication.Shared.Classes;
 using ScheduleApplication.Shared.Infrastructure.Database;
 
 namespace ScheduleApplication.Features.Appointments
