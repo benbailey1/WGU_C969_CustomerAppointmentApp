@@ -68,7 +68,7 @@ namespace ScheduleApplication.Features.Login
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                 string solutionDir = Directory.GetParent(baseDir).Parent.Parent.FullName;
 
-                string loggingDir = Path.Combine(solutionDir, "Features", "Logging");
+                string loggingDir = Path.Combine(solutionDir, "Shared", "Logging");
                 string logFilePath = Path.Combine(loggingDir, "Login_History.txt");
 
                 if (!Directory.Exists(loggingDir))
