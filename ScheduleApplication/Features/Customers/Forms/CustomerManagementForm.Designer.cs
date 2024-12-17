@@ -42,7 +42,7 @@
             this.customerGridView.Name = "customerGridView";
             this.customerGridView.RowHeadersWidth = 51;
             this.customerGridView.RowTemplate.Height = 24;
-            this.customerGridView.Size = new System.Drawing.Size(563, 351);
+            this.customerGridView.Size = new System.Drawing.Size(569, 351);
             this.customerGridView.TabIndex = 0;
             // 
             // btnAddCustomer

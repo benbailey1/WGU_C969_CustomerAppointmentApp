@@ -13,13 +13,17 @@ namespace ScheduleApplication.Features.Customers
         private readonly ICustomerService _customerService;
         private readonly ICityRepository _cityRepo;
         private readonly int? _customerId;
+        private readonly int _loggedInUserId;
+        private int? _addressId;
+        private int? _cityId;
         private bool _hasUnsavedChanges;
         private Dictionary<string, Label> _errorLabels;
-        public CustomerDetailForm(ICustomerService customerService, ICityRepository cityRepo, int? customerId = null)
+        public CustomerDetailForm(ICustomerService customerService, ICityRepository cityRepo, int loggedInUserId, int? customerId = null)
         {
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
             _cityRepo = cityRepo ?? throw new ArgumentNullException(nameof(cityRepo));
             _customerId = customerId;
+            _loggedInUserId = loggedInUserId;
             InitializeComponent();
             SetupErrorLabels();
             GetCities();
@@ -77,9 +81,13 @@ namespace ScheduleApplication.Features.Customers
             var result = await _customerService.GetCustomerByIdAsync(_customerId.Value);
             if (result.IsSuccess)
             {
+                _addressId = result.Value.AddressId;
+                _cityId = result.Value.CityId;
+
                 txtCustomerName.Text = result.Value.CustomerName;
                 txtAddress1.Text = result.Value.Address1;
                 txtAddress2.Text = result.Value.Address2;
+                
                 txtPostalCode.Text = result.Value.PostalCode;
                 txtPhone.Text = result.Value.Phone;
 
@@ -87,6 +95,7 @@ namespace ScheduleApplication.Features.Customers
                 var cityIndex = cities.FindIndex(c => c.CityId.ToString() == result.Value.City);
                 if (cityIndex < 0)
                 {
+                    Console.WriteLine($"the city index is {cityIndex}");
                     comboBoxCity.SelectedIndex = cityIndex;
                 }
             }
@@ -108,6 +117,7 @@ namespace ScheduleApplication.Features.Customers
                 CustomerName = txtCustomerName.Text.Trim(),
                 Address = new Address
                 {
+                    AddressId = _addressId ?? 0,
                     Address1 = txtAddress1.Text.Trim(),
                     Address2 = txtAddress2.Text.Trim(),
                     CityId = selectedCityId,

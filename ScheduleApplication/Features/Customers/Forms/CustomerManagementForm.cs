@@ -9,13 +9,15 @@ namespace ScheduleApplication.Features.Customers
         private readonly ICustomerService _customerService;
         private readonly ICityRepository _cityRepository;
         private bool _isLoading = false;
-        public CustomerManagementForm(ICustomerService customerService, ICityRepository cityRepository)
+        private readonly int _loggedInUserId;
+        public CustomerManagementForm(ICustomerService customerService, ICityRepository cityRepository, int loggedInUserId)
         {
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
             _cityRepository = cityRepository ?? throw new ArgumentNullException(nameof(cityRepository));
             InitializeComponent();
             SetupDataGridView();
             LoadCustomers();
+            _loggedInUserId = loggedInUserId;
         }
 
         private void SetupDataGridView()
@@ -75,7 +77,7 @@ namespace ScheduleApplication.Features.Customers
 
         private void btnAddCustomer_Click(object sender, EventArgs e)
         {
-            using (var detailForm = new CustomerDetailForm(_customerService, _cityRepository))
+            using (var detailForm = new CustomerDetailForm(_customerService, _cityRepository, _loggedInUserId))
             {
                 if (detailForm.ShowDialog() == DialogResult.OK)
                 {

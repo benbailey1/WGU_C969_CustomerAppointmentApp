@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ScheduleApplication.Features.Appointments;
+using ScheduleApplication.Features.Calendar;
 using ScheduleApplication.Features.Customers;
 using ScheduleApplication.Shared.Domain.Cities;
 using ScheduleApplication.Shared.Infrastructure.Database;
@@ -45,7 +46,7 @@ namespace ScheduleApplication.Features.Main
 
             var appointmentRepo = new AppointmentRepository(dbConFact);
             var appointmentValidator = new AppointmentValidator();
-            _apptService = new AppointmentService(appointmentRepo, appointmentValidator);
+            _apptService = new AppointmentService(appointmentRepo, appointmentValidator); 
 
             Console.WriteLine("Setting up navigation tree view...");
             SetupNavigationTreeView();
@@ -54,11 +55,12 @@ namespace ScheduleApplication.Features.Main
 
         }
 
-        private void btnManageAppointments_Click(object sender, EventArgs e)
-        {
-            AppointmentManagementForm appointmentForm = new AppointmentManagementForm(_apptService);
-            appointmentForm.Show();
-        }
+        // TODO: DELETE -- verify this isn't used 
+        //private void btnManageAppointments_Click(object sender, EventArgs e)
+        //{
+        //    AppointmentManagementForm appointmentForm = new AppointmentManagementForm(_apptService);
+        //    appointmentForm.Show();
+        //}
 
         private void SetupNavigationTreeView()
         {
@@ -66,6 +68,7 @@ namespace ScheduleApplication.Features.Main
             // Create the main nodes
             TreeNode reportsNode = new TreeNode("Reports");
             TreeNode managementNode = new TreeNode("Management");
+            TreeNode calendarNode = new TreeNode("Calendar");
 
             // Add report subnodes
             reportsNode.Nodes.Add(new TreeNode("Appointment Types by Month") { Tag = "appointment-types" });
@@ -76,9 +79,13 @@ namespace ScheduleApplication.Features.Main
             managementNode.Nodes.Add(new TreeNode("Manage Customers") { Tag = "customers" });
             managementNode.Nodes.Add(new TreeNode("Manage Appointments") { Tag = "appointments" });
 
+            // Calendar Node
+            calendarNode.Nodes.Add(new TreeNode("View Calendar") { Tag = "calendar" });
+
             // Add all main nodes to TreeView
             navigationTreeView.Nodes.Add(reportsNode);
             navigationTreeView.Nodes.Add(managementNode);
+            navigationTreeView.Nodes.Add(calendarNode);
 
             // Add logout node
             navigationTreeView.Nodes.Add(new TreeNode("Log Out") { Tag = "logout" });
@@ -117,9 +124,42 @@ namespace ScheduleApplication.Features.Main
                     ShowAppointmentManagement();
                     break;
 
+                case "calendar":
+                    ShowCalendar();
+                    break;
+
                 case "logout":
                     HandleLogout();
                     break;
+            }
+        }
+
+        private void ShowCalendar()
+        {
+            try
+            {
+                contentPanel.Controls.Clear();
+
+                MessageBox.Show("Showing Calendar");
+
+                Label loadingLabel = new Label
+                {
+                    Text = "Loading Calendar...",
+                    AutoSize = true,
+                    Font = new Font("Segoe UI", 12),
+                    Location = new Point(10, 10)
+                };
+                contentPanel.Controls.Add(loadingLabel);
+
+                // TODO: SHOW CALENDAR FORM
+
+                CalendarForm calendarForm = new CalendarForm();
+                calendarForm.Show();
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
         }
 
@@ -589,7 +629,7 @@ namespace ScheduleApplication.Features.Main
             var cityRepo = new CityRepository(dbFactory);
             var customerService = new CustomerService(customerRepo);
 
-            var customerForm = new CustomerManagementForm(customerService, cityRepo);
+            var customerForm = new CustomerManagementForm(customerService, cityRepo, _loggedInUserId);
             customerForm.TopLevel = false;
             customerForm.FormBorderStyle = FormBorderStyle.None;
             customerForm.Dock = DockStyle.Fill;
@@ -601,7 +641,9 @@ namespace ScheduleApplication.Features.Main
         private void ShowAppointmentManagement()
         {
             contentPanel.Controls.Clear();
-            var appointmentForm = new AppointmentManagementForm(_apptService);
+            // var appointmentForm = new AppointmentManagementForm(apptService, _loggedInUserId);
+            var dbFactory = new DBConnectionFactory();
+            var appointmentForm = new AppointmentManagementForm(dbFactory, _loggedInUserId);
             appointmentForm.TopLevel = false;
             appointmentForm.FormBorderStyle = FormBorderStyle.None;
             appointmentForm.Dock = DockStyle.Fill;

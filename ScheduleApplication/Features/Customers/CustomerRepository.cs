@@ -166,10 +166,16 @@ namespace ScheduleApplication.Features.Customers
                 {
                     await conn.OpenAsync();
 
-                    string query = @"SELECT Customer.customerId AS customerId, Customer.customerName AS customerName,
-                                     Address.phone AS phone, Address.address AS address, Address.address2 AS address2,
-                                     City.city AS city, Address.postalCode AS postalCode,
-                                     Country.country AS country
+                    string query = @"SELECT Customer.customerId AS customerId, 
+                                        Customer.customerName AS customerName,
+                                        Address.addressId as addressId, 
+                                        Address.phone AS phone, 
+                                        Address.address AS address, 
+                                        Address.address2 AS address2,
+                                        Address.cityId as cityId,
+                                        City.city AS city, 
+                                        Address.postalCode AS postalCode,
+                                        Country.country AS country
                                      FROM Customer
                                      INNER JOIN Address ON Customer.addressId = Address.addressId
                                      INNER JOIN City ON Address.cityId = City.cityId
@@ -188,9 +194,11 @@ namespace ScheduleApplication.Features.Customers
                                 {
                                     CustomerId = reader.GetInt32("customerId"),
                                     CustomerName = reader.GetString("customerName"),
+                                    AddressId = reader.GetInt32("addressId"),
                                     Phone = reader.GetString("phone"),
                                     Address1 = reader.GetString("address"),
                                     Address2 = reader.GetString("address2"),
+                                    CityId = reader.GetInt32("cityId"),
                                     City = reader.GetString("city"),
                                     PostalCode = reader.GetString("postalCode"),
                                     Country = reader.GetString("country")
@@ -218,37 +226,83 @@ namespace ScheduleApplication.Features.Customers
                 {
                     await conn.OpenAsync();
 
-                    string query = @"UPDATE customer
-                                    SET customerName = @customerName,
-                                    addressId = @addressId,
-                                    active = @active,
-                                    lastUpdate = NOW(),
-                                    lastUpdateBy = @lastUpdateBy
-                                    WHERE customerId = @customerId;";
-
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (var transaction = conn.BeginTransaction())
                     {
-                        var param = cmd.Parameters;
-
-                        param.AddWithValue("@customerId", customer.CustomerId);
-                        param.AddWithValue("@customerName", customer.CustomerName);
-                        param.AddWithValue("@addressId", customer.Address.AddressId);
-                        param.AddWithValue("@active", customer.Active);
-                        param.AddWithValue("@lastUpdateBy", customer.AuditInfo.LastUpdateBy);
-
-                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                        if (rowsAffected == 0)
+                        try
                         {
-                            return Result<bool>.NotFound($"Customer with ID {customer.CustomerId} was not found.");
-                        }
+                            string addressQuery = @"UPDATE address 
+                            SET address = @address,
+                            address2 = @address2,
+                            cityId = @cityId,
+                            postalCode = @postalCode,
+                            phone = @phone,
+                            lastUpdate = NOW(),
+                            lastUpdateBy = @lastUpdateBy
+                            WHERE addressId = @addressId;";
 
-                        return Result<bool>.Success(true);
+                            using (MySqlCommand addressCmd = new MySqlCommand(addressQuery, conn))
+                            {
+                                addressCmd.Transaction = transaction;
+                                var p = addressCmd.Parameters;
+
+                                p.AddWithValue("@addressId", customer.Address.AddressId);
+                                p.AddWithValue("@address", customer.Address.Address1);
+                                p.AddWithValue("@address2", customer.Address.Address2 ?? string.Empty);
+                                p.AddWithValue("@cityId", customer.Address.CityId);
+                                p.AddWithValue("@postalCode", customer.Address.PostalCode);
+                                p.AddWithValue("@phone", customer.Address.Phone);
+                                p.AddWithValue("@lastUpdateBy", customer.AuditInfo.LastUpdateBy);
+
+                                int addressRowsAffected = await addressCmd.ExecuteNonQueryAsync();
+                                if (addressRowsAffected == 0)
+                                {
+                                    transaction.Rollback();
+                                    return Result<bool>.NotFound($"Address with ID {customer.Address.AddressId} was not found.");
+                                }
+                            }
+
+                            string customerQuery = @"UPDATE customer
+                            SET customerName = @customerName,
+                            active = @active,
+                            lastUpdate = NOW(),
+                            lastUpdateBy = @lastUpdateBy
+                            WHERE customerId = @customerId;";
+
+                            using (MySqlCommand customerCmd = new MySqlCommand(customerQuery, conn))
+                            {
+                                customerCmd.Transaction = transaction;
+                                var p = customerCmd.Parameters;
+
+                                p.AddWithValue("@customerId", customer.CustomerId);
+                                p.AddWithValue("@customerName", customer.CustomerName);
+                                p.AddWithValue("@active", customer.Active);
+                                p.AddWithValue("@lastUpdateBy", customer.AuditInfo.LastUpdateBy);
+
+                                int customerRowsAffected = await customerCmd.ExecuteNonQueryAsync();
+                                if (customerRowsAffected == 0)
+                                {
+                                    transaction.Rollback();
+                                    return Result<bool>.NotFound($"Customer with ID {customer.CustomerId} was not found.");
+                                }
+                            }
+
+                            
+                            transaction.Commit();
+                            MessageBox.Show($"Customer {customer.CustomerId} updated successfully.");
+                            return Result<bool>.Success(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            // If anything fails, roll back both operations
+                            transaction.Rollback();
+                            throw;
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
+                MessageBox.Show($"Error updating customer: {ex.Message}");
                 return Result<bool>.Failure($"Failed to update customer: {ex.Message}");
             }
         }

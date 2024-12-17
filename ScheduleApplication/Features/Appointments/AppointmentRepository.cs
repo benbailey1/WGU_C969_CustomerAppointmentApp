@@ -139,7 +139,7 @@ namespace ScheduleApplication.Features.Appointments
                     {
                         var p = cmd.Parameters;
 
-                        p.AddWithValue(@"appointmentId", appt.AppointmentId);
+                        p.AddWithValue("@appointmentId", appt.AppointmentId);
                         p.AddWithValue("@customerId", appt.CustomerId);
                         p.AddWithValue("@userId", appt.UserId);
                         p.AddWithValue("@title", appt.Title);

@@ -170,6 +170,9 @@
     <Compile Include="Shared\Classes\Address.cs" />
     <Compile Include="Shared\Classes\Country.cs" />
     <Compile Include="Shared\Classes\User.cs" />
+    <EmbeddedResource Include="Features\Appointments\Forms\AppointmentManagementForm.resx">
+      <DependentUpon>AppointmentManagementForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Features\Calendar\CalendarForm.resx">
       <DependentUpon>CalendarForm.cs</DependentUpon>
     </EmbeddedResource>

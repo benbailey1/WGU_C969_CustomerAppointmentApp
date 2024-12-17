@@ -42,12 +42,19 @@ namespace ScheduleApplication.Features.Customers
                     return Result<int>.Failure(errors);
                 }
 
-                var customerId = Convert.ToInt32(await _customerRepo.AddCustomerAsync(customer));
+                var result = await _customerRepo.AddCustomerAsync(customer);
+
+                if (!result.IsSuccess)
+                {
+                    return Result<int>.Failure(result.Error);
+                }
 
                 // TODO: Implement logging
-                MessageBox.Show($"Customer created successfully with ID: {customerId}");
 
-                return Result<int>.Success(customerId);
+                // TODO: Delete -- confirmation message in Repo
+                // MessageBox.Show($"Customer created successfully with ID: {result.Value}");
+
+                return Result<int>.Success(result.Value);
 
             }
             catch (Exception ex)
@@ -147,7 +154,7 @@ namespace ScheduleApplication.Features.Customers
                     return Result<bool>.Failure(result.Error);
                 }
 
-                MessageBox.Show($"Customer {customer.CustomerId} updated successfully");
+                // MessageBox.Show($"Customer {customer.CustomerId} updated successfully");
                 return Result<bool>.Success(true);
             }
             catch (Exception ex)
