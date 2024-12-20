@@ -1,9 +1,7 @@
 ﻿using ScheduleApplication.Features.Appointments.Models;
-using ScheduleApplication.Shared.Infrastructure.Database;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -68,7 +66,7 @@ namespace ScheduleApplication.Features.Login
                 string baseDir = AppDomain.CurrentDomain.BaseDirectory;
                 string solutionDir = Directory.GetParent(baseDir).Parent.Parent.FullName;
 
-                string loggingDir = Path.Combine(solutionDir, "Features", "Logging");
+                string loggingDir = Path.Combine(solutionDir, "Shared", "Logging");
                 string logFilePath = Path.Combine(loggingDir, "Login_History.txt");
 
                 if (!Directory.Exists(loggingDir))

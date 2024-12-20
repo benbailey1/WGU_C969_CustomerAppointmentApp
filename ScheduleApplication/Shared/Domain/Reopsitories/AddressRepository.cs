@@ -1,5 +1,4 @@
 ﻿using MySql.Data.MySqlClient;
-using ScheduleApplication.Shared.Domain;
 using ScheduleApplication.Shared.Infrastructure.Database;
 using System;
 using System.Collections.Generic;
@@ -18,11 +17,11 @@ namespace ScheduleApplication.Shared.Classes
 
     }
 
-    public class AddressRepo : IAddressRepo
+    public class AddressRepository : IAddressRepo
     {
         private readonly IDbConnectionFactory _connFact;
 
-        public AddressRepo(IDbConnectionFactory connFact)
+        public AddressRepository(IDbConnectionFactory connFact)
         {
             _connFact = connFact;
         }

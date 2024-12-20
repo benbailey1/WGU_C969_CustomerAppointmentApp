@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using ScheduleApplication.Shared.Classes;
-using ScheduleApplication.Shared.Domain.Cities;
+using ScheduleApplication.Shared.Domain.Reopsitories;
 
 namespace ScheduleApplication.Features.Customers
 {
