@@ -121,11 +121,16 @@ namespace ScheduleApplication.Features.Login
         {
             if (Thread.CurrentThread.CurrentCulture.TwoLetterISOLanguageName == "es")
             {
+                if (message.StartsWith("Authentication error: "))
+                {
+                    string errorMessage = message.Substring("Authentication error: ".Length);
+                    return $"Error de autenticación: {errorMessage}";
+                }
                 switch (message)
                 {
                     case "Login successful!":
                         return "¡Inicio de sesión exitoso!";
-                    case "The username and password do not match.":
+                    case "Invalid username or password":
                         return "El nombre de usuario y la contraseña no coinciden.";
                     case "Username and password cannot be empty.":
                         return "El nombre de usuario y la contraseña no pueden estar vacíos.";

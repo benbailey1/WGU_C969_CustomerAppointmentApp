@@ -173,7 +173,7 @@ namespace ScheduleApplication.Features.Appointments
                 return;
             }
 
-            if (await DoAppointmentsOverlap(customerId, start, end))
+            if (await DoAppointmentsOverlap(start, end))
             {
                 MessageBox.Show("The appointment overlaps with an existing appointment. Please choose another time.");
                 return;
@@ -184,6 +184,7 @@ namespace ScheduleApplication.Features.Appointments
             {
                 using (var conn = _dbConFact.CreateConnection())
                 {
+                    await conn.OpenAsync();
 
                     string query =
                         "INSERT INTO appointment (customerId, userId, title, description, location, contact, type, url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy) " +
@@ -254,7 +255,7 @@ namespace ScheduleApplication.Features.Appointments
                     return;
                 }
 
-                if (await DoAppointmentsOverlap(customerId, start, end))
+                if (await DoAppointmentsOverlap(start, end))
                 {
                     MessageBox.Show("The appointment overlaps with an existing appointment. Please choose another time.");
                     return;
@@ -320,6 +321,7 @@ namespace ScheduleApplication.Features.Appointments
             {
                 using (var conn = _dbConFact.CreateConnection())
                 {
+                    await conn.OpenAsync();
 
                     string query = "DELETE FROM appointment WHERE appointmentId = @appointmentId;";
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
@@ -389,62 +391,53 @@ namespace ScheduleApplication.Features.Appointments
             return true;
         }
 
-        private async Task<bool> DoAppointmentsOverlap(int customerId, DateTime start, DateTime end, int? appointmentId = null)
+        /// <summary>
+        /// Checks if a proposed appointment time overlaps with any existing appointments in the database
+        /// </summary>
+        /// <param name="start">Proposed appointment start time</param>
+        /// <param name="end">Proposed appointment end time</param>
+        /// <param name="appointmentId">Optional ID of an existing appointment being updated (to exclude from overlap check)</param>
+        /// <returns>True if there is an overlap, false if no overlap exists</returns>
+        private async Task<bool> DoAppointmentsOverlap(DateTime start, DateTime end, int? appointmentId = null)
         {
-            bool isExistingAppt = false;
-
-            if (appointmentId.HasValue)
-            {
-                isExistingAppt = true;
-            }
-
             try
             {
                 using (var conn = _dbConFact.CreateConnection())
                 {
                     await conn.OpenAsync();
 
-                    string query = "";
+                    
+                    string query = @"SELECT COUNT(*) FROM appointment 
+                           WHERE @start < end AND @end > start";
 
-                    if (isExistingAppt)
+                    // If updating existing appointment, exclude it from the check
+                    if (appointmentId.HasValue)
                     {
-                        query = query = @"SELECT COUNT(*) FROM appointment WHERE customerId = @customerId AND (@start < end AND @end > start) AND appointmentId != @appointmentId";
-                    }
-                    else
-                    {
-                        query = @"SELECT COUNT(*) FROM appointment WHERE customerId = @customerId AND (@start < end AND @end > start);";
+                        query += " AND appointmentId != @appointmentId";
                     }
 
                     using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
-                        var p = cmd.Parameters;
+                        
+                        cmd.Parameters.AddWithValue("@start", start);
+                        cmd.Parameters.AddWithValue("@end", end);
 
-                        if (!isExistingAppt)
+                        
+                        if (appointmentId.HasValue)
                         {
-                            p.AddWithValue("@customerId", customerId);
-                            p.AddWithValue("@start", start);
-                            p.AddWithValue("@end", end);
-                        }
-                        else
-                        {
-                            p.AddWithValue("@customerId", customerId);
-                            p.AddWithValue("@start", start);
-                            p.AddWithValue("@end", end);
-                            p.AddWithValue("@appointmentId", appointmentId.Value);
+                            cmd.Parameters.AddWithValue("@appointmentId", appointmentId.Value);
                         }
 
-                        int rowsAffected = Convert.ToInt32(cmd.ExecuteScalar());
-
-                        return rowsAffected > 0;
-
-
+                        
+                        int overlapCount = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                        return overlapCount > 0;
                     }
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error checking overlapping appointments: {ex.Message}");
-                return true;
+                return true; // Assume overlap on error to be safe
             }
         }
 

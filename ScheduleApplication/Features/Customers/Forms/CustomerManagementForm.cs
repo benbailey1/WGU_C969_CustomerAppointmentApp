@@ -1,4 +1,4 @@
-﻿using ScheduleApplication.Shared.Domain.Cities;
+﻿using ScheduleApplication.Shared.Domain.Reopsitories;
 using System;
 using System.Windows.Forms;
 

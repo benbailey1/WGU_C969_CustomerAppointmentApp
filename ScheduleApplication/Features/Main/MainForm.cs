@@ -129,8 +129,6 @@ namespace ScheduleApplication.Features.Main
             {
                 contentPanel.Controls.Clear();
 
-                MessageBox.Show("Showing Calendar");
-
                 Label loadingLabel = new Label
                 {
                     Text = "Loading Calendar...",
@@ -161,13 +159,12 @@ namespace ScheduleApplication.Features.Main
             }
         }
 
+        // Lambda Expression for this repor is on line 291
         private async void ShowAppointmentTypesReport()
         {
             try
             {
                 contentPanel.Controls.Clear();
-
-                MessageBox.Show("Showing Appointment Types Report");
 
                 Label loadingLabel = new Label
                 {
@@ -290,7 +287,8 @@ namespace ScheduleApplication.Features.Main
 
             foreach (var month in data.OrderBy(m => DateTime.ParseExact(m.Month, "MMMM", null).ToLocalTime()))
             {
-                foreach (var typeCount in month.TypeCounts.OrderByDescending(tc => tc.Count))
+  // --------**********--------*********--------    LAMBDA EXPRESSION FOR APPOINTMENT TYPES REPORT      --------**********--------*********--------********
+                foreach (var typeCount in month.TypeCounts.OrderByDescending(tc => tc.Count)) // LAMBDA EXPRESSION FOR APPOINTMENT TYPES REPORT
                 {
                     dt.Rows.Add(month.Month, typeCount.Type, typeCount.Count);
                 }
@@ -352,11 +350,11 @@ namespace ScheduleApplication.Features.Main
             return dt;
         }
 
+        // LAMBDA EXPRESSION FOR Show User Schedules REPORT on line 426
         private async void ShowUserSchedulesReport()
         {
             try
             {   
-                MessageBox.Show("Showing User Schedules Report");
                 contentPanel.Controls.Clear();
 
                 Label loadingLabel = new Label
@@ -423,7 +421,8 @@ namespace ScheduleApplication.Features.Main
 
                 foreach (var userSchedule in result.Value)
                 {
-                    foreach (var appointment in userSchedule.Value.OrderBy(a => a.Start))
+  // --------**********--------*********--------    LAMBDA EXPRESSION FOR Show User Schedules REPORT      --------**********--------*********--------********
+                    foreach (var appointment in userSchedule.Value.OrderBy(a => a.Start)) // LAMBDA EXPRESSION FOR ShowUserSchedulesReport
                     {
                         dt.Rows.Add(
                             userSchedule.Key,
@@ -463,6 +462,7 @@ namespace ScheduleApplication.Features.Main
             
         }
 
+        // LAMBDA EXPRESSION FOR Show User Schedules REPORT on line 539
         private async void ShowLocationReport()
         {
             try
@@ -535,7 +535,8 @@ namespace ScheduleApplication.Features.Main
                         location.Location,
                         location.TotalAppointments,
                         location.UniqueCustomers,
-                        location.AppointmentTypes.FirstOrDefault()?.Type ?? "N/A",
+ // --------**********--------*********--------    LAMBDA EXPRESSION FOR Location REPORT      --------**********--------*********--------********
+                        location.AppointmentTypes.FirstOrDefault()?.Type ?? "N/A", // Lambda Expression for Location Report
                         location.UpcomingAppointments.Count
                     );
                 }

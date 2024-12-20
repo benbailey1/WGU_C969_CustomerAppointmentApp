@@ -304,7 +304,7 @@ namespace ScheduleApplication.Features.Customers
                 return Result<bool>.Failure($"Failed to update customer: {ex.Message}");
             }
         }
-        
+
         public async Task<Result<bool>> DeleteCustomerByIdAsync(int customerId)
         {
             try
@@ -313,12 +313,21 @@ namespace ScheduleApplication.Features.Customers
                 {
                     await conn.OpenAsync();
 
-                    string query = @"DELETE FROM customer WHERE customerId = @customerId;";
+                    // First check for existing appointments
+                    string checkAppointmentsQuery = @"SELECT COUNT(*) FROM appointment WHERE customerId = @customerId;";
 
-                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    using (MySqlCommand cmd = new MySqlCommand(checkAppointmentsQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@customerId", customerId);
+                        int appointmentCount = Convert.ToInt32(await cmd.ExecuteScalarAsync());
 
+                        if (appointmentCount > 0)
+                        {
+                            return Result<bool>.Failure($"Cannot delete customer with ID {customerId} because they have {appointmentCount} existing appointments");
+                        }
+
+                        // If no appointments exist, proceed with customer deletion
+                        cmd.CommandText = @"DELETE FROM customer WHERE customerId = @customerId;";
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         if (rowsAffected == 0)

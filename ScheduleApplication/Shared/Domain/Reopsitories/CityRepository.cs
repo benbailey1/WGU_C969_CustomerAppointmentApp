@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
 using ScheduleApplication.Shared.Classes;
-using ScheduleApplication.Shared.Domain.Cities;
 using ScheduleApplication.Shared.Infrastructure.Database;
 using System.Windows.Forms;
 

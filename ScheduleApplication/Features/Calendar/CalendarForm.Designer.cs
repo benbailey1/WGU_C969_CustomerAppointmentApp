@@ -30,7 +30,8 @@
         {
             this.AppointmentCalendar = new System.Windows.Forms.MonthCalendar();
             this.dataGridViewAppointments = new System.Windows.Forms.DataGridView();
-            this.lblCalendar = new System.Windows.Forms.Label();
+            this.rbSelectDay = new System.Windows.Forms.RadioButton();
+            this.rbSelectMonth = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAppointments)).BeginInit();
             this.SuspendLayout();
             // 
@@ -45,29 +46,42 @@
             // dataGridViewAppointments
             // 
             this.dataGridViewAppointments.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewAppointments.Location = new System.Drawing.Point(335, 72);
+            this.dataGridViewAppointments.Location = new System.Drawing.Point(402, 70);
             this.dataGridViewAppointments.Margin = new System.Windows.Forms.Padding(4);
             this.dataGridViewAppointments.Name = "dataGridViewAppointments";
             this.dataGridViewAppointments.RowHeadersWidth = 51;
             this.dataGridViewAppointments.Size = new System.Drawing.Size(452, 278);
             this.dataGridViewAppointments.TabIndex = 2;
             // 
-            // lblCalendar
+            // rbSelectDay
             // 
-            this.lblCalendar.AutoSize = true;
-            this.lblCalendar.Location = new System.Drawing.Point(59, 72);
-            this.lblCalendar.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblCalendar.Name = "lblCalendar";
-            this.lblCalendar.Size = new System.Drawing.Size(214, 16);
-            this.lblCalendar.TabIndex = 3;
-            this.lblCalendar.Text = "Select a date to view appointments";
+            this.rbSelectDay.AutoSize = true;
+            this.rbSelectDay.Location = new System.Drawing.Point(12, 70);
+            this.rbSelectDay.Name = "rbSelectDay";
+            this.rbSelectDay.Size = new System.Drawing.Size(145, 20);
+            this.rbSelectDay.TabIndex = 4;
+            this.rbSelectDay.TabStop = true;
+            this.rbSelectDay.Text = "Select Specific Day";
+            this.rbSelectDay.UseVisualStyleBackColor = true;
+            // 
+            // rbSelectMonth
+            // 
+            this.rbSelectMonth.AutoSize = true;
+            this.rbSelectMonth.Location = new System.Drawing.Point(172, 70);
+            this.rbSelectMonth.Name = "rbSelectMonth";
+            this.rbSelectMonth.Size = new System.Drawing.Size(142, 20);
+            this.rbSelectMonth.TabIndex = 5;
+            this.rbSelectMonth.TabStop = true;
+            this.rbSelectMonth.Text = "Select Entire Month";
+            this.rbSelectMonth.UseVisualStyleBackColor = true;
             // 
             // CalendarForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.lblCalendar);
+            this.ClientSize = new System.Drawing.Size(878, 450);
+            this.Controls.Add(this.rbSelectMonth);
+            this.Controls.Add(this.rbSelectDay);
             this.Controls.Add(this.dataGridViewAppointments);
             this.Controls.Add(this.AppointmentCalendar);
             this.Name = "CalendarForm";
@@ -82,6 +96,7 @@
 
         private System.Windows.Forms.MonthCalendar AppointmentCalendar;
         private System.Windows.Forms.DataGridView dataGridViewAppointments;
-        private System.Windows.Forms.Label lblCalendar;
+        private System.Windows.Forms.RadioButton rbSelectDay;
+        private System.Windows.Forms.RadioButton rbSelectMonth;
     }
 }
