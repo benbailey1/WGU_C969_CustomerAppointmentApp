@@ -91,7 +91,7 @@ namespace ScheduleApplication.Features.Customers
             if (customerGridView.SelectedRows.Count == 0) return;
 
             var customer = (CustomerResponse)customerGridView.SelectedRows[0].DataBoundItem;
-            using (var detailForm = new CustomerDetailForm(_customerService, _cityRepository, customer.CustomerId))
+            using (var detailForm = new CustomerDetailForm(_customerService, _cityRepository, _loggedInUserId, customer.CustomerId))
             {
                 if (detailForm.ShowDialog() == DialogResult.OK)
                 {

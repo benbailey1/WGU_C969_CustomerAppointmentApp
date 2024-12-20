@@ -20,6 +20,7 @@ namespace ScheduleApplication.Features.Customers
         private Dictionary<string, Label> _errorLabels;
         public CustomerDetailForm(ICustomerService customerService, ICityRepository cityRepo, int loggedInUserId, int? customerId = null)
         {
+            Console.WriteLine($"Incoming customerid: {customerId}");
             _customerService = customerService ?? throw new ArgumentNullException(nameof(customerService));
             _cityRepo = cityRepo ?? throw new ArgumentNullException(nameof(cityRepo));
             _customerId = customerId;
@@ -92,10 +93,9 @@ namespace ScheduleApplication.Features.Customers
                 txtPhone.Text = result.Value.Phone;
 
                 var cities = (List<City>)comboBoxCity.DataSource;
-                var cityIndex = cities.FindIndex(c => c.CityId.ToString() == result.Value.City);
-                if (cityIndex < 0)
+                var cityIndex = cities.FindIndex(c => c.CityName == result.Value.City);
+                if (cityIndex >= 0)
                 {
-                    Console.WriteLine($"the city index is {cityIndex}");
                     comboBoxCity.SelectedIndex = cityIndex;
                 }
             }
@@ -127,8 +127,8 @@ namespace ScheduleApplication.Features.Customers
                 Active = true,
                 AuditInfo = new AuditInfo
                 {
-                    CreatedBy = "system",
-                    LastUpdateBy = "system"
+                    CreatedBy = _loggedInUserId.ToString(),
+                    LastUpdateBy = _loggedInUserId.ToString()
                 }
             };
 
